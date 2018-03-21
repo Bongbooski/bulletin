@@ -1,0 +1,122 @@
+<% include header.ejs %>
+</head>
+<body>
+  <header>
+    <div id="header_div" class="container">
+      <nav>
+        <ul class="nav nav-tabs nav-justified">
+          <li role="presentation" class="head_title"><a href="/">전체보기</a></li>
+          <li role="presentation" class="active head_title"><a href="/cat1">게시판종류1</a></li>
+          <li role="presentation" class="head_title"><a href="/cat2">게시판종류2</a></li>
+        </ul>
+      </nav>
+    </div>
+  </header>
+
+  <div id="board" class="container">
+    <table class="table table-striped">
+      <thead>
+        <tr>
+          <th class="post_index">번호</th>
+          <th class="post_index">제목</th>
+          <th>작성자</th>
+          <th>날짜</th>
+          <!-- <th>조회수</th> -->
+        </tr>
+      </thead>
+      <tbody>
+        <% data.forEach(function(item, index){ %>
+        <tr>
+          <td class="post_index"><%= item.id %></td>
+          <td class="open" name="<%= item.category %>_<%= item.id %>"><%= item.title %></a></td>
+          <td><%= item.author %></td>
+          <td><%= item.date %></td>
+        </tr>
+        <% }); %>
+      </tbody>
+    </table>
+    <hr/>
+    <button id="new" class="btn btn-default pull-right">글쓰기</button>
+
+    <div class="text-center">
+      <ul class="pagination">
+        <li><a href="#">1</a></li>
+        <li><a href="#">2</a></li>
+        <li><a href="#">3</a></li>
+        <li><a href="#">4</a></li>
+        <li><a href="#">5</a></li>
+        <li><a href="#">6</a></li>
+      </ul>
+    </div>
+  </div>
+
+  <div id="add_post" class="container" style="display:none">
+    <div class="form-group">
+      <label for="title">제목</label>
+      <input type="text" class="form-control" id="title" placeholder="제목을 입력하세요">
+    </div>
+    <div class="form-group">
+      <label for="author">작성자</label>
+      <input type="text" class="form-control" id="author" placeholder="작성자를 입력하세요">
+    </div>
+    <div class="form-group">
+      <label for="content">내용</label>
+      <textarea class="form-control" id="content" placeholder="내용을 입력하세요" rows="10"></textarea>
+    </div>
+    <div class="form-group" style="display:none">
+      <label for="file">파일 업로드</label>
+      <input type="file" id="file">
+    </div>
+    <button id="add" class="btn btn-default">제출</button>
+    <button id="back" class="btn btn-default">뒤로</button>
+</div>
+
+<script>
+  $(".open").on("click", function(){
+    var post_info = $(this).attr("name").split("_");
+    var post_cat = post_info[0];
+    var post_id = post_info[1];
+    console.log("클릭: " + $(this).attr("name") + "/" + post_info);
+    location.href="/post/"+post_id;
+  });
+
+  $("#new").on("click", function(){
+    $("#add_post").css("display","");
+    $("#board").css("display","none");
+  });
+
+  $("#back").on("click", function(){
+    $("#add_post").css("display","none");
+    $("#board").css("display","");
+  });
+
+ $("#add").on("click",function(){
+    var title = $("#title").val();
+    var author = $("#author").val();
+    var content = $("#content").val();
+
+    console.log(title, author, content);
+    $.ajax({
+      type: 'POST',
+      dataType: "json",
+      url: '/post/cat1/new',
+      data: {
+        "title": title,
+        "author": author,
+        "content": content
+      },
+      //dataType: 'jsonp' - removed
+      //jsonpCallback: 'callback' - removed
+      success: function (result) {
+        console.log("리턴1: "+result.status);
+        if(result.status == 200){
+          location.reload();
+        }
+      },
+      error: function (result) {
+        alart("저장 실패");
+      }
+  });
+});
+</script>
+<% include footer.ejs %>
