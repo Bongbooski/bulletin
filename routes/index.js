@@ -1,11 +1,13 @@
 var express = require('express');
 var router = express.Router();
 var mysql = require('mysql');
+var db_config = require('../config/db-config.json');
 
 var client = mysql.createConnection({
-  user: 'root',
-  password: '',
-  database: 'bulletin'
+  host     : db_config.host,
+  user     : db_config.user,
+  password : db_config.password,
+  database : db_config.database
 });
 
 /* GET home page. */
